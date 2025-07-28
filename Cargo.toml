@@ -1,0 +1,15 @@
+[package]
+name = "bf_ga_search"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow      = "1"
+brainwhat         = {git = "https://github.com/dmitmel/brainwhat"   }  
+crossbeam-channel = "0.5"
+dashmap     = "5"
+indicatif   = "0.17"
+once_cell   = "1.19"
+rand        = { version = "0.8", features = ["std", "small_rng"] }
+rand_pcg    = "0.3"
+rayon       = "1.10"
