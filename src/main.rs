@@ -34,10 +34,10 @@ struct Args {
 
 /* ---------- global knobs ------------------------ */
 
-const POP_SIZE: usize      = 4_096;
-const GENERATIONS: usize   = 200_000;    // evaluation budget = POP_SIZE * GENERATIONS
-const ELITES: usize        = 64;         // kept unchanged each generation
-const MAX_CODE_LEN: usize  = 64;
+const POP_SIZE: usize      = 4*4_096;
+const GENERATIONS: usize   = 8*200_000;    // evaluation budget = POP_SIZE * GENERATIONS
+const ELITES: usize        = 128;         // kept unchanged each generation
+const MAX_CODE_LEN: usize  = 16;
 const STEP_CAP: usize      = 5_000;
 
 const WEIGHT_N: f32 = 0.7;
@@ -315,7 +315,7 @@ fn main() -> Result<()> {
     /* progress bar */
     let pb = ProgressBar::new((POP_SIZE * GENERATIONS) as u64);
     pb.set_style(
-        ProgressStyle::with_template("[{elapsed_precise}] {bar:40.cyan/blue} {pos}/{len}")
+        ProgressStyle::with_template("[{elapsed_precise}] {bar:40.cyan/blue} {pos}/{len}{percent:>3}%")
             .unwrap(),
     );
 
