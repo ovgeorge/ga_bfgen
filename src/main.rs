@@ -20,6 +20,18 @@ use std::{
     thread,
 };
 
+use clap::Parser;
+
+///  GA search for novel Brain‑what programs
+#[derive(Parser)]
+struct Args {
+    /// Path of the archive file to append to *and* resume from
+    #[arg(long, default_value = "programs.txt")]
+    programs: String,
+}
+
+
+
 /* ---------- global knobs ------------------------ */
 
 const POP_SIZE: usize      = 4_096;
@@ -263,13 +275,33 @@ fn tournament_select<'a, R: Rng>(rng: &mut R, pool: &'a [Individual]) -> &'a Ind
 /* -------------------- main -------------------- */
 
 fn main() -> Result<()> {
-    /* writer thread -> programs.txt */
+
+    /* ---------- CLI ---------- */
+    let args = Args::parse();
+    let file_path = args.programs;          // single source of truth
+
+    /* ---------- novelty archive ---------- */
+    let archive: DashMap<String, ()> = DashMap::new();
+    if let Ok(txt) = std::fs::read_to_string(&file_path) {
+        for rec in txt.split("###\n").filter(|s| !s.trim().is_empty()) {
+            let mut lines = rec.lines();
+            let _code = lines.next();                           // line 1 – program string
+            if let Some(out_line) = lines.next() {              // line 2 – "-> xx xx"
+                if let Some(out) = out_line.strip_prefix("->") {
+                    archive.insert(out.trim().to_owned(), ());
+                }
+            }
+        }
+    }
+
+    /* ---------- writer thread ---------- */
     let (tx, rx) = unbounded::<String>();
+    let writer_path = file_path.clone();
     let writer = thread::spawn(move || -> Result<()> {
         let file = OpenOptions::new()
             .create(true)
             .append(true)
-            .open("programs.txt")?;
+            .open(&writer_path)?;
         let mut w = BufWriter::new(file);
         for line in rx {
             w.write_all(line.as_bytes())?;
@@ -277,7 +309,6 @@ fn main() -> Result<()> {
         w.flush()?;
         Ok(())
     });
-
     /* shared novelty archive */
     let archive: DashMap<String, ()> = DashMap::new();
 
