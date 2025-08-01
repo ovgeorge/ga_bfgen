@@ -35,13 +35,13 @@ struct Args {
 /* ---------- global knobs ------------------------ */
 
 const POP_SIZE: usize      = 4*4_096;
-const GENERATIONS: usize   = 8*200_000;    // evaluation budget = POP_SIZE * GENERATIONS
-const ELITES: usize        = 128;         // kept unchanged each generation
+const GENERATIONS: usize   = 80*200_000;    // evaluation budget = POP_SIZE * GENERATIONS
+const ELITES: usize        = 256;         // kept unchanged each generation
 const MAX_CODE_LEN: usize  = 16;
 const STEP_CAP: usize      = 5_000;
 
-const WEIGHT_N: f32 = 0.7;
-const WEIGHT_L: f32 = 0.3;
+const WEIGHT_N: f32 = 0.3;
+const WEIGHT_L: f32 = 0.7;
 
 /* ----------- random program generator ----------- */
 
@@ -309,8 +309,6 @@ fn main() -> Result<()> {
         w.flush()?;
         Ok(())
     });
-    /* shared novelty archive */
-    let archive: DashMap<String, ()> = DashMap::new();
 
     /* progress bar */
     let pb = ProgressBar::new((POP_SIZE * GENERATIONS) as u64);
