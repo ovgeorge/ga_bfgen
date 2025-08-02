@@ -246,16 +246,6 @@ struct Individual {
     fitness: f32,
 }
 
-impl Individual {
-    fn dummy() -> Self {
-        Self {
-            code: String::new(),
-            output: String::new(),
-            fitness: f32::NEG_INFINITY,
-        }
-    }
-}
-
 fn fitness(output_seen: bool, code_len: usize) -> f32 {
     let novelty = if output_seen { 0.0 } else { 1.0 };
     let length_score = 1.0 / code_len as f32;
